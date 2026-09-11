@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ADE 2026 — 여행 일정</title>
+<style>
+:root{
+  --bg:#0a0a0a;
+  --panel:#111;
+  --panel2:#171717;
+  --line:#2a2a2a;
+  --text:#f5f5f2;
+  --muted:#8c8c86;
+  --ade:#f3f000;
+  --ade2:#d8ff00;
+  --black:#0a0a0a;
+  --ok:#b8ff5a;
+  --warn:#ffcc66;
+  --radius:18px;
+}
+*{box-sizing:border-box}
+html{background:var(--bg);scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:Inter,Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  letter-spacing:-.01em;
+}
+button,input{font:inherit}
+a{color:inherit;text-decoration:none}
+.shell{max-width:1440px;margin:auto;padding:20px 20px 80px}
+
+/* Organik-inspired utility header */
+.top{
+  position:sticky;top:0;z-index:30;
+  margin:-20px -20px 0;padding:14px 20px 12px;
+  background:rgba(10,10,10,.88);
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--line);
+}
+.toprow{display:flex;align-items:center;gap:12px}
+.brand{
+  display:flex;align-items:center;gap:10px;min-width:max-content
+}
+.mark{
+  width:34px;height:34px;border-radius:50%;
+  background:var(--ade);color:#050505;
+  display:grid;place-items:center;font-size:12px;font-weight:1000
+}
+.brandtext{font-size:15px;font-weight:900;letter-spacing:-.03em}
+.brandtext small{display:block;color:var(--muted);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-top:2px}
+.search{
+  flex:1;position:relative
+}
+.search input{
+  width:100%;height:42px;border:1px solid var(--line);border-radius:13px;
+  background:#141414;color:white;outline:none;padding:0 14px 0 38px
+}
+.search:before{content:"⌕";position:absolute;left:14px;top:9px;color:#777;font-size:20px}
+.clock{
+  min-width:max-content;text-align:right
+}
+.clock .time{font-size:15px;font-weight:900}
+.clock .zone{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.09em;margin-top:2px}
+
+/* hero */
+.hero{padding:30px 0 18px}
+.kicker{font-size:11px;color:var(--ade);font-weight:900;letter-spacing:.14em;text-transform:uppercase}
+h1{font-size:clamp(40px,6vw,88px);line-height:.88;letter-spacing:-.065em;margin:10px 0 12px;font-weight:1000}
+.hero-meta{display:flex;gap:8px;flex-wrap:wrap}
+.meta-pill{
+  border:1px solid var(--line);background:#121212;border-radius:999px;
+  padding:8px 10px;font-size:11px;font-weight:800;color:#bdbdb7
+}
+.meta-pill.primary{background:var(--ade);border-color:var(--ade);color:#0a0a0a}
+
+/* controls like Organik */
+.controls{
+  display:grid;gap:10px;margin:6px 0 20px
+}
+.scroller{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.scroller::-webkit-scrollbar{display:none}
+.filter{
+  flex:0 0 auto;border:1px solid var(--line);background:#111;color:#aaa;
+  border-radius:999px;padding:9px 12px;font-size:11px;font-weight:900;cursor:pointer;
+}
+.filter.active{background:var(--text);color:#0a0a0a;border-color:var(--text)}
+.filter.booked{border-color:#777500;color:var(--ade)}
+.filter.booked.active{background:var(--ade);color:#0a0a0a;border-color:var(--ade)}
+.venue-filter.active{background:var(--ade);border-color:var(--ade);color:#0a0a0a}
+
+/* now/up next */
+.livebar{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 18px
+}
+.livebox{
+  border:1px solid var(--line);background:var(--panel);
+  border-radius:16px;padding:14px
+}
+.label{font-size:10px;color:var(--muted);font-weight:900;letter-spacing:.11em;text-transform:uppercase}
+.livebox .value{font-size:14px;font-weight:900;margin-top:5px}
+.livebox .sub{font-size:11px;color:#92928d;margin-top:3px}
+
+/* schedule */
+.day{
+  margin-top:24px
+}
+.dayhead{
+  display:flex;align-items:end;justify-content:space-between;gap:12px;
+  margin-bottom:10px
+}
+.daytitle{font-size:26px;font-weight:1000;letter-spacing:-.045em}
+.daytitle span{color:var(--muted);font-size:12px;font-weight:800;letter-spacing:0;margin-left:6px}
+.daynote{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:800}
+
+.event{
+  display:grid;grid-template-columns:96px minmax(0,1fr) auto;
+  gap:14px;align-items:center;
+  padding:13px 14px;margin-bottom:8px;border-radius:16px;
+  border:1px solid var(--line);background:#111;
+  transition:.15s ease;
+}
+.event:hover{border-color:#555;transform:translateY(-1px)}
+.event.booked{border-color:#686800;background:linear-gradient(90deg,#151500,#111 32%)}
+.event.hidden{display:none}
+.event-time{font-size:14px;font-weight:950;letter-spacing:-.03em}
+.event-time small{display:block;color:var(--muted);font-size:9px;letter-spacing:.04em;margin-top:3px}
+.event-name{font-size:16px;font-weight:950;line-height:1.08;letter-spacing:-.025em}
+.event-info{font-size:11px;color:#8f8f8a;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.tag{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;padding:5px 7px;border-radius:999px;background:#1c1c1c;color:#b5b5b0;border:1px solid #292929}
+.tag.ade{background:var(--ade);color:#070707;border-color:var(--ade)}
+.tag.ok{background:#173000;color:var(--ok);border-color:#315a00}
+.actions{display:flex;align-items:center;gap:8px}
+.status{
+  min-width:72px;text-align:center;border:1px solid var(--line);
+  padding:7px 8px;border-radius:10px;font-size:9px;font-weight:950;text-transform:uppercase;letter-spacing:.07em;color:#999
+}
+.status.booked{background:var(--ade);border-color:var(--ade);color:#080808}
+.mapbtn{
+  width:34px;height:34px;border:1px solid var(--line);border-radius:10px;background:#181818;
+  display:grid;place-items:center;font-size:14px;color:white
+}
+
+/* compact map */
+.mapsection{margin-top:32px;border-top:1px solid var(--line);padding-top:24px}
+.sectionhead{display:flex;justify-content:space-between;align-items:end;gap:12px;margin-bottom:12px}
+.sectiontitle{font-size:24px;font-weight:1000;letter-spacing:-.04em}
+.sectionsub{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:800}
+.mapgrid{display:grid;grid-template-columns:1.45fr .75fr;gap:10px}
+.mapcard,.routecard{border:1px solid var(--line);border-radius:18px;background:#101010;overflow:hidden}
+.mapwrap{min-height:500px;position:relative}
+svg{display:block;width:100%;height:100%}
+.water{fill:#10171a}.ring{fill:none;stroke:#242424;stroke-width:1.2;stroke-dasharray:7 8}
+.road{fill:none;stroke:#1d1d1d;stroke-width:2}
+.dot{fill:var(--ade);stroke:#060606;stroke-width:3}
+.dot.off{fill:#fff}
+.vlabel{fill:#f5f5f2;font-size:11px;font-weight:900}
+.vsub{fill:#777;font-size:8px;font-weight:700}
+.rline{fill:none;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;opacity:.8}
+.r21{stroke:#efcbbf}.r22{stroke:#fff}.r23{stroke:var(--ade)}.r24{stroke:#cb9dd0}.r25{stroke:#87bfff}
+.routecard{padding:12px}
+.routeitem{padding:11px 10px;border-bottom:1px solid #232323}
+.routeitem:last-child{border-bottom:0}
+.routeitem .rday{font-size:10px;color:var(--ade);font-weight:950;letter-spacing:.1em;text-transform:uppercase}
+.routeitem .rtext{font-size:12px;font-weight:850;line-height:1.4;margin-top:4px}
+.routeitem .rmuted{font-size:10px;color:#777;margin-top:4px}
+.dst{
+  margin-top:10px;border:1px solid #3a351c;background:#17150d;color:#cfc8a4;
+  border-radius:12px;padding:11px 12px;font-size:10px;line-height:1.45
+}
+
+/* bottom info */
+.footer{margin-top:24px;padding-top:16px;border-top:1px solid var(--line);font-size:10px;color:#666;line-height:1.6}
+@media(max-width:900px){
+  .toprow{flex-wrap:wrap}.search{order:3;flex-basis:100%}
+  .clock{margin-left:auto}
+  .livebar{grid-template-columns:1fr}
+  .event{grid-template-columns:78px minmax(0,1fr);padding:12px}
+  .actions{grid-column:2;justify-content:flex-start;margin-top:-4px}
+  .mapgrid{grid-template-columns:1fr}
+  .mapwrap{min-height:460px}
+}
+@media(max-width:540px){
+  .shell{padding:14px 12px 60px}
+  .top{margin:-14px -12px 0;padding:10px 12px}
+  .brandtext small{display:none}
+  h1{font-size:54px}
+  .event{grid-template-columns:68px minmax(0,1fr);gap:10px}
+  .event-name{font-size:15px}
+  .event-info{white-space:normal}
+  .mapwrap{min-height:520px}
+}
+
+.planning{margin-top:34px;padding-top:24px;border-top:1px solid var(--line)}
+.plan-head{display:flex;justify-content:space-between;align-items:end;gap:12px;margin-bottom:12px}
+.plan-title{font-size:26px;font-weight:1000;letter-spacing:-.04em}
+.plan-sub{font-size:10px;color:var(--muted);font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.plan-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.plan-card{border:1px solid var(--line);background:#111;border-radius:16px;padding:14px}
+.plan-card.done{border-color:#4e5200;background:linear-gradient(180deg,#151500,#111)}
+.plan-card .plan-k{font-size:10px;color:var(--ade);font-weight:950;letter-spacing:.09em;text-transform:uppercase}
+.plan-card .plan-v{font-size:14px;font-weight:900;line-height:1.3;margin-top:6px}
+.plan-card .plan-m{font-size:11px;color:#85857f;line-height:1.45;margin-top:5px}
+.plan-check{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:10px;font-weight:900;color:#aaa}
+.plan-check::before{content:"";width:12px;height:12px;border:1px solid #666;border-radius:3px}
+.plan-card.done .plan-check{color:var(--ade)}
+.plan-card.done .plan-check::before{content:"✓";display:grid;place-items:center;background:var(--ade);color:#090909;border-color:var(--ade);font-size:9px}
+@media(max-width:900px){.plan-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.plan-grid{grid-template-columns:1fr}}
+
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="top">
+    <div class="toprow">
+      <div class="brand">
+        <div class="mark">ADE</div>
+        <div class="brandtext">ADE 2026<small>Amsterdam 일정 플래너</small></div>
+      </div>
+      <div class="search"><input id="search" placeholder="이벤트, 아티스트, 장소 검색..." autocomplete="off"></div>
+      <div class="clock">
+        <div class="time" id="amsTime">--:--:--</div>
+        <div class="zone">Amsterdam · 현지시간</div>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="kicker">21 — 25 October 2026 · 암스테르담</div>
+    <h1>AMSTERDAM<br>DANCE EVENT</h1>
+    <div class="hero-meta">
+      <span class="meta-pill primary">금요일 · Mochakk 예약 완료</span>
+      <span class="meta-pill">Amsterdam 현지시간</span>
+      <span class="meta-pill">Europe/Amsterdam</span>
+      <span class="meta-pill">동선 Map 포함</span>
+    </div>
+  </section>
+
+  <section class="controls">
+    <div class="scroller" id="dayFilters">
+      <button class="filter active" data-day="all">전체</button>
+      <button class="filter" data-day="21">Wed 21</button>
+      <button class="filter" data-day="22">Thu 22</button>
+      <button class="filter booked" data-day="23">Fri 23 · Booked</button>
+      <button class="filter" data-day="24">Sat 24</button>
+      <button class="filter" data-day="25">Sun 25</button>
+    </div>
+    <div class="scroller" id="venueFilters">
+      <button class="filter venue-filter active" data-venue="all">전체 장소</button>
+      <button class="filter venue-filter" data-venue="Gashouder">Gashouder</button>
+      <button class="filter venue-filter" data-venue="SugarFactory">SugarFactory</button>
+      <button class="filter venue-filter" data-venue="RADION">RADION</button>
+      <button class="filter venue-filter" data-venue="Westerkerk">Westerkerk</button>
+      <button class="filter venue-filter" data-venue="H7">H7</button>
+    </div>
+  </section>
+
+  <section class="livebar">
+    <div class="livebox">
+      <div class="label">확정 일정</div>
+      <div class="value">Mochakk Calling · Gashouder</div>
+      <div class="sub">10/23 금 · 23:00–06:00 · 예약 완료</div>
+    </div>
+    <div class="livebox">
+      <div class="label">아직 정할 것</div>
+      <div class="value">10/24 토 낮 · Joris Voorn vs Lane 8</div>
+      <div class="sub">시간이 거의 겹쳐서 둘 중 하나 선택</div>
+    </div>
+  </section>
+
+  <main id="schedule">
+    <section class="day" data-day-section="20">
+      <div class="dayhead"><div class="daytitle">20 OCT <span>TUE · 도착</span></div><div class="daynote">Amsterdam 현지시간</div></div>
+      <div class="event" data-day="20" data-venue="Schiphol" data-search="재찬 schiphol 도착">
+        <div class="event-time">19:20<small>CEST</small></div>
+        <div><div class="event-name">재찬 · Schiphol 도착</div><div class="event-info">Amsterdam Airport Schiphol</div></div>
+        <div class="actions"><span class="status">도착</span><a class="mapbtn" href="https://www.google.com/maps/search/?api=1&query=Amsterdam+Airport+Schiphol" target="_blank">↗</a></div>
+      </div>
+      <div class="event" data-day="20" data-venue="Centraal" data-search="주형 amsterdam centraal 도착">
+        <div class="event-time">19:50<small>CEST</small></div>
+        <div><div class="event-name">주형 · Amsterdam Centraal 도착</div><div class="event-info">Amsterdam Centraal</div></div>
+        <div class="actions"><span class="status">도착</span><a class="mapbtn" href="https://www.google.com/maps/search/?api=1&query=Amsterdam+Centraal" target="_blank">↗</a></div>
+      </div>
+    </section>
+
+    <section class="day" data-day-section="21">
+      <div class="dayhead"><div class="daytitle">21 OCT <span>WED</span></div><div class="daynote">1일차</div></div>
+      <div class="event" data-day="21" data-venue="Singel" data-search="volt friends boat party singel gai barone not demure">
+        <div class="event-time">13:30<small>→ 17:30 · CEST</small></div>
+        <div>
+          <div class="event-name">VOLT & Friends Boat Party</div>
+          <div class="event-info">Singel 250 · Rederij de Nederlanden</div>
+          <div class="tags"><span class="tag">Boat</span><span class="tag">Gai Barone</span><span class="tag">Not Demure</span></div>
+        </div>
+        <div class="actions"><span class="status">확인 완료</span><a class="mapbtn" href="https://www.google.com/maps/search/?api=1&query=Singel+250+Amsterdam" target="_blank">↗</a></div>
+      </div>
+      <div class="event" data-day="21" data-venue="Westerkerk" data-search="sona monkey project westerkerk house">
+        <div class="event-time">17:00<small>→ 23:59 · CEST</small></div>
+        <div>
+          <div class="event-name">SONA Presents: Monkey Project</div>
+          <div class="event-info">Westerkerk · Prinsengracht 279</div>
+          <div class="tags"><span class="tag">House</span><span class="tag">30분 겹침</span></div>
+        </div>
+        <div class="actions"><span class="status">확인 완료</span><a class="mapbtn" href="https://www.google.com/maps/search/?api=1&query=Westerkerk+Prinsengracht+279+Amsterdam" target="_blank">↗</a></div>
+      </div>
+      <div class="event" data-day="21" data-venue="Schiphol" data-search="민경 schiphol 도착">
+        <div class="event-time">21:50<small>CEST</small></div>
+        <div><div class="event-name">민경 · Schiphol 도착</div><div class="event-info">Amsterdam Airport Schiphol</div></div>
+        <div class="actions"><span class="status">도착</span><a class="mapbtn" href="https://www.google.com/maps/search/?api=1&query=Amsterdam+Airport+Schiphol" target="_blank">↗</a></div>
+      </div>
+      <div class="event" data-day="21" data-venue="Levenslang" data-search="blade prison rave hannah laing amber broos levenslang">
+        <div class="event-time">23:30<small>→ 05:00 · CEST</small></div>
+        <div>
+          <div class="event-name">BLADE Prison Rave</div>
+          <div class="event-info">Levenslang Amsterdam</div>
+          <div class="tags"><span class="tag">Hannah Laing</span><span class="tag">Amber Broos</span></div>
+        </div>
+        <div class="actions"><span class="status">확인 완료</span><a class="mapbtn" href="https://www.google.com/maps/search/?api=1&query=Levenslang+Amsterdam" target="_blank">↗</a></div>
+      </div>
+    </section>
+
+    <section class="day" data-day-section="22">
+      <div class="dayhead"><div class="daytitle">22 OCT <span>THU</span></div><div class="daynote">2일차</div></div>
+      <div class="event" data-day="22" data-venue="Centrale Markthal" data-search="djrum live einder boris acket centrale markthal">
+        <div class="event-time">22:00<small>→ 23:00 · CEST</small></div>
+        <div>
+          <div class="event-name">Djrum (live) × EINDER</div>
+          <div class="event-info">Centrale Markthal</div>
+          <div class="tags"><span class="tag">Live</span><span class="tag">Boris Acket</span></div>
+        </div>
+        <div class="actions"><span class="status">확인 완료</span><a class="mapbtn" href="https://www.google.com/maps/search/?api=1&query=Centrale+Markthallen+170+Amsterdam" target="_blank">↗</a></div>
+      </div>
+      <div class="event" data-day="22" data-venue="H7" data-search="intercell 999999999 h7 warehouse hard techno">
+        <div class="event-time">23:00<small>→ 06:00 · CEST</small></div>
+        <div>
+          <div class="event-name">Intercell × 999999999 Invites</div>
+          <div class="event-info">H7 Warehouse · Humberweg 7</div>
+          <div class="tags"><span class="tag">999999999</span><span class="tag">Hard Techno</span><span class="tag">티켓 날짜 확인</span></div>
+        </div>
+        <div class="actions"><span class="status">확인 필요</span><a class="mapbtn" href="https://www.google.com/maps/search/?api=1&query=H7+Warehouse+Humberweg+7+Amsterdam" target="_blank">↗</a></div>
+      </div>
+    </section>
+
+    <section class="day" data-day-section="23">
+      <div class="dayhead"><div class="daytitle">23 OCT <span>FRI</span></div><div class="daynote">금요일 밤 확정</div></div>
+      <div class="event booked" data-day="23" data-venue="Gashouder" data-search="mochakk calling gashouder mph juliana x isabella">
+        <div class="event-time">23:00<small>→ 06:00 · CEST</small></div>
+        <div>
+          <div class="event-name">Mochakk Calling</div>
+          <div class="event-info">Gashouder · Klönneplein 1</div>
+          <div class="tags"><span class="tag ade">Booked</span><span class="tag">Mochakk</span><span class="tag">MPH</span><span class="tag">Juliana X</span></div>
+        </div>
+        <div class="actions"><span class="status booked">예약 완료 ✓</span><a class="mapbtn" href="https://www.google.com/maps/search/?api=1&query=Gashouder+Klonneplein+1+Amsterdam" target="_blank">↗</a></div>
+      </div>
+    </section>
+
+    <section class="day" data-day-section="24">
+      <div class="dayhead"><div class="daytitle">24 OCT <span>SAT</span></div><div class="daynote">낮 일정 선택</div></div>
+      <div class="event" data-day="24" data-venue="SugarFactory" data-search="joris voorn trip to galaxy jeff mills sugarfactory awakenings">
+        <div class="event-time">13:00<small>→ 21:30 · CEST</small></div>
+        <div>
+          <div class="event-name">Joris Voorn · Trip To Galaxy</div>
+          <div class="event-info">SugarFactory · Halfweg</div>
+          <div class="tags"><span class="tag">Jeff Mills</span><span class="tag">Joris Voorn</span><span class="tag">A안</span></div>
+        </div>
+        <div class="actions"><span class="status">A안</span><a class="mapbtn" href="https://www.google.com/maps/search/?api=1&query=SugarFactory+Kristalpromenade+7+Halfweg" target="_blank">↗</a></div>
+      </div>
+      <div class="event" data-day="24" data-venue="Kromhouthal" data-search="dgtl lane 8 this never happened yotto kasbo kromhouthal">
+        <div class="event-time">15:00<small>→ 21:30 · CEST</small></div>
+        <div>
+          <div class="event-name">DGTL · Lane 8 / This Never Happened</div>
+          <div class="event-info">Kromhouthal</div>
+          <div class="tags"><span class="tag">Lane 8</span><span class="tag">YOTTO</span><span class="tag">B안</span></div>
+        </div>
+        <div class="actions"><span class="status">B안</span><a class="mapbtn" href="https://www.google.com/maps/search/?api=1&query=Kromhouthal+Amsterdam" target="_blank">↗</a></div>
+      </div>
+    </section>
+
+    <section class="day" data-day-section="25">
+      <div class="dayhead"><div class="daytitle">25 OCT <span>SUN</span></div><div class="daynote">DST 종료 · CET 전환</div></div>
+      <div class="event" data-day="25" data-venue="RADION" data-search="breakfast club second wind radion gene on earth ogazon">
+        <div class="event-time">09:00<small>→ 19:00 · CET</small></div>
+        <div>
+          <div class="event-name">Breakfast Club · Second Wind</div>
+          <div class="event-info">RADION · Louwesweg 1</div>
+          <div class="tags"><span class="tag">Gene On Earth</span><span class="tag">Ogazón</span><span class="tag">Closing</span></div>
+        </div>
+        <div class="actions"><span class="status">확인 완료</span><a class="mapbtn" href="https://www.google.com/maps/search/?api=1&query=RADION+Louwesweg+1+Amsterdam" target="_blank">↗</a></div>
+      </div>
+      <div class="event" data-day="25" data-venue="Schiphol" data-search="airport 출국 schiphol">
+        <div class="event-time">TBD<small>CET</small></div>
+        <div><div class="event-name">Airport · 출국</div><div class="event-info">Amsterdam Airport Schiphol</div></div>
+        <div class="actions"><span class="status">이동</span><a class="mapbtn" href="https://www.google.com/maps/search/?api=1&query=Amsterdam+Airport+Schiphol" target="_blank">↗</a></div>
+      </div>
+      <div class="dst">DST: Amsterdam changes from CEST (UTC+2) to CET (UTC+1) early on Sun 25 Oct. Event times above follow Amsterdam 현지시간 time.</div>
+    </section>
+  </main>
+
+  <section class="mapsection">
+    <div class="sectionhead">
+      <div class="sectiontitle">전체 동선 Map</div>
+      <div class="sectionsub">상대 위치 기준 · ↗ 누르면 Google Maps</div>
+    </div>
+    <div class="mapgrid">
+      <div class="mapcard">
+        <div class="mapwrap">
+          <svg viewBox="0 0 900 560" aria-label="ADE 2026 route map">
+            <path class="water" d="M0 75C165 35 295 60 400 88s240 5 500-35V0H0Z"/>
+            <ellipse class="ring" cx="485" cy="275" rx="235" ry="158"/>
+            <ellipse class="ring" cx="485" cy="275" rx="145" ry="101"/>
+            <path class="road" d="M150 90C230 175 300 215 335 290c40 86 120 130 300 150"/>
+            <path class="road" d="M300 100c80 95 150 130 245 162 110 36 230 30 340-15"/>
+            <path class="rline r21" d="M474 205 L455 270 L690 390"/>
+            <path class="rline r22" d="M405 255 L235 300"/>
+            <path class="rline r23" d="M365 210 L365 210"/>
+            <path class="rline r24" d="M140 245 L735 155"/>
+            <path class="rline r25" d="M300 430 L70 505"/>
+            <g><circle class="dot off" cx="70" cy="505" r="9"/><text class="vlabel" x="88" y="500">SCHIPHOL</text></g>
+            <g><circle class="dot off" cx="140" cy="245" r="9"/><text class="vlabel" x="158" y="240">SUGARFACTORY</text><text class="vsub" x="158" y="254">Halfweg</text></g>
+            <g><circle class="dot off" cx="235" cy="300" r="9"/><text class="vlabel" x="252" y="296">H7</text></g>
+            <g><circle class="dot off" cx="300" cy="430" r="9"/><text class="vlabel" x="318" y="426">RADION</text></g>
+            <g><circle class="dot" cx="365" cy="210" r="11"/><text class="vlabel" x="383" y="205">GASHOUDER</text><text class="vsub" x="383" y="219">MOCHAKK · BOOKED</text></g>
+            <g><circle class="dot off" cx="405" cy="255" r="9"/><text class="vlabel" x="423" y="251">CENTRALE MARKTHAL</text></g>
+            <g><circle class="dot off" cx="455" cy="270" r="9"/><text class="vlabel" x="472" y="287">WESTERKERK</text></g>
+            <g><circle class="dot off" cx="474" cy="205" r="9"/><text class="vlabel" x="492" y="190">SINGEL 250</text></g>
+            <g><circle class="dot off" cx="545" cy="150" r="9"/><text class="vlabel" x="563" y="146">CENTRAAL</text></g>
+            <g><circle class="dot off" cx="735" cy="155" r="9"/><text class="vlabel" x="752" y="151">KROMHOUTHAL</text></g>
+            <g><circle class="dot off" cx="690" cy="390" r="9"/><text class="vlabel" x="708" y="386">LEVENS LANG</text></g>
+          </svg>
+        </div>
+      </div>
+      <div class="routecard">
+        <div class="routeitem"><div class="rday">Wed 21</div><div class="rtext">Singel 250 → Westerkerk → Levenslang</div><div class="rmuted">Boat · SONA · BLADE</div></div>
+        <div class="routeitem"><div class="rday">Thu 22</div><div class="rtext">Centrale Markthal → H7</div><div class="rmuted">Djrum · Intercell</div></div>
+        <div class="routeitem"><div class="rday">Fri 23</div><div class="rtext">Gashouder</div><div class="rmuted">Mochakk Calling · BOOKED</div></div>
+        <div class="routeitem"><div class="rday">Sat 24</div><div class="rtext">SugarFactory OR Kromhouthal</div><div class="rmuted">낮 일정 하나 선택</div></div>
+        <div class="routeitem"><div class="rday">Sun 25</div><div class="rtext">RADION → Schiphol</div><div class="rmuted">Second Wind · 출국</div></div>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="planning">
+    <div class="plan-head">
+      <div class="plan-title">아직 정해야 할 것</div>
+      <div class="plan-sub">Planning checklist</div>
+    </div>
+
+    <div class="plan-grid">
+      <div class="plan-card done">
+        <div class="plan-k">Fri 23</div>
+        <div class="plan-v">Mochakk Calling</div>
+        <div class="plan-m">Gashouder · 예약 완료</div>
+        <div class="plan-check">확정</div>
+      </div>
+
+      <div class="plan-card">
+        <div class="plan-k">Sat 24 · Day</div>
+        <div class="plan-v">Joris Voorn vs Lane 8</div>
+        <div class="plan-m">낮 일정 하나만 선택</div>
+        <div class="plan-check">선택 필요</div>
+      </div>
+
+      <div class="plan-card">
+        <div class="plan-k">Sat 24 · Night</div>
+        <div class="plan-v">Saturday night party</div>
+        <div class="plan-m">Sammy Virji 제외하고 새 후보 찾기</div>
+        <div class="plan-check">미정</div>
+      </div>
+
+      <div class="plan-card">
+        <div class="plan-k">Thu 22</div>
+        <div class="plan-v">Intercell ticket date</div>
+        <div class="plan-m">티켓 표기 날짜 최종 확인</div>
+        <div class="plan-check">확인 필요</div>
+      </div>
+
+      <div class="plan-card">
+        <div class="plan-k">Set times</div>
+        <div class="plan-v">입장 / 퇴장 시간</div>
+        <div class="plan-m">셋타임 공개 후 핵심 DJ 기준으로 조정</div>
+        <div class="plan-check">공개 대기</div>
+      </div>
+
+      <div class="plan-card">
+        <div class="plan-k">Transport</div>
+        <div class="plan-v">숙소 ↔ Venue 이동</div>
+        <div class="plan-m">막차, Uber/Bolt, Halfweg 이동시간 확인</div>
+        <div class="plan-check">계획 필요</div>
+      </div>
+
+      <div class="plan-card">
+        <div class="plan-k">Sun 25</div>
+        <div class="plan-v">RADION → Schiphol</div>
+        <div class="plan-m">항공편 시간 기준 퇴장시간 역산</div>
+        <div class="plan-check">출국시간 입력 필요</div>
+      </div>
+
+      <div class="plan-card">
+        <div class="plan-k">Group</div>
+        <div class="plan-v">민경 · 주형 · 재찬 우선순위</div>
+        <div class="plan-m">각자 꼭 보고 싶은 DJ 1~2명 확정</div>
+        <div class="plan-check">정리 필요</div>
+      </div>
+
+      <div class="plan-card">
+        <div class="plan-k">Backup</div>
+        <div class="plan-v">Sold out / fatigue backup</div>
+        <div class="plan-m">대체 파티 1개씩만 준비</div>
+        <div class="plan-check">선택 사항</div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    UI structure inspired by Organik 2026: searchable schedule, compact day/venue filters and fast-scan event rows. Visual theme uses ADE-style black + high-visibility yellow. All times are Amsterdam 현지시간 time.
+  </footer>
+</div>
+
+<script>
+const search = document.getElementById('search');
+let selectedDay='all', selectedVenue='all';
+
+function applyFilters(){
+  const q=search.value.trim().toLowerCase();
+  document.querySelectorAll('.event').forEach(el=>{
+    const dayOk = selectedDay==='all' || el.dataset.day===selectedDay;
+    const venueOk = selectedVenue==='all' || (el.dataset.venue||'').toLowerCase().includes(selectedVenue.toLowerCase());
+    const hay=(el.dataset.search+' '+el.dataset.venue+' '+el.innerText).toLowerCase();
+    const qOk=!q || hay.includes(q);
+    el.classList.toggle('hidden', !(dayOk && venueOk && qOk));
+  });
+  document.querySelectorAll('.day').forEach(day=>{
+    const visible=[...day.querySelectorAll('.event')].some(e=>!e.classList.contains('hidden'));
+    day.style.display=visible?'block':'none';
+  });
+}
+search.addEventListener('input',applyFilters);
+document.querySelectorAll('#dayFilters .filter').forEach(btn=>btn.addEventListener('click',()=>{
+  document.querySelectorAll('#dayFilters .filter').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');selectedDay=btn.dataset.day;applyFilters();
+}));
+document.querySelectorAll('#venueFilters .filter').forEach(btn=>btn.addEventListener('click',()=>{
+  document.querySelectorAll('#venueFilters .filter').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');selectedVenue=btn.dataset.venue;applyFilters();
+}));
+
+function tick(){
+  const now=new Date();
+  const t=new Intl.DateTimeFormat('en-GB',{
+    timeZone:'Europe/Amsterdam',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false
+  }).format(now);
+  document.getElementById('amsTime').textContent=t;
+}
+tick(); setInterval(tick,1000);
+</script>
+</body>
+</html>

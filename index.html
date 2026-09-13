@@ -14,6 +14,8 @@
 <link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png">
 <link rel="icon" type="image/png" href="./assets/icon-192.png">
 <link rel="manifest" href="./manifest.webmanifest">
+<link rel="stylesheet" href="./assets/places.css">
+<script src="./assets/places.js" defer></script>
 <script>
 // Each document launch starts at the top, including a saved section URL.
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
@@ -102,10 +104,11 @@ button,input,select{font:inherit}button,a{-webkit-tap-highlight-color:transparen
  <div class="container header-inner">
   <a class="brand" href="#top" aria-label="AMSTERDAM DANCE EVENT"><img src="./assets/ade-logo.png" alt="ADE" width="50" height="50"><span class="brand-name">ADE 2026<small>AMSTERDAM DANCE EVENT</small></span></a>
   <div class="header-search"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input id="searchInput" type="search" placeholder="Search / 검색" aria-label="이벤트, 아티스트, 장소 검색" autocomplete="off"><button class="search-clear" type="button" id="clearSearch" aria-label="검색 지우기" hidden>×</button></div>
-  <nav class="header-links" aria-label="주요 메뉴"><a href="#program">일정</a><a href="#map">지도</a><a href="#planning">To do</a></nav>
+  <nav class="header-links" aria-label="주요 메뉴"><a href="#program">일정</a><a href="#map">지도</a><a href="#places">Places</a><a href="#planning">To do</a></nav>
   <div class="header-tools"><button type="button" class="icon-button favorite-filter" id="favoriteFilter" aria-label="찜한 일정만 보기" aria-pressed="false"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg><span class="favorite-counter" id="favoriteCount">1</span></button><button type="button" class="icon-button" id="menuToggle" aria-label="메뉴 열기" aria-expanded="false" aria-controls="menuPanel"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h18M3 17h18"/></svg></button></div>
  </div>
- <nav class="menu-wrap" id="menuPanel" hidden aria-label="전체 메뉴"><a href="#program">Day plan <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></a><a href="#map">Map / 동선 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></a><a href="#flights">Flights / 출국 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></a><a href="#planning">To do <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></a><a href="https://www.amsterdam-dance-event.nl/en/program/" target="_blank" rel="noopener noreferrer">ADE 공식 프로그램 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></a></nav>
+ <nav class="menu-wrap" id="menuPanel" hidden aria-label="전체 메뉴"><a href="#program">Day plan <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></a><a href="#map">Map / 동선 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></a><a href="#places">Places / 식당 & 가볼 곳 ↗</a><a href="#flights">Flights / 출국 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></a><a href="#planning">To do <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></a><a href="https://www.amsterdam-dance-event.nl/en/program/" target="_blank" rel="noopener noreferrer">ADE 공식 프로그램 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></a></nav>
+ <nav class="mobile-section-nav" aria-label="섹션 바로가기"><a href="#program">Program</a><a href="#map">Map</a><a href="#places">Places</a><a href="#planning">To do</a></nav>
 </header>
 <main>
  <section class="hero" aria-labelledby="heroTitle">
@@ -405,6 +408,26 @@ button,input,select{font:inherit}button,a{-webkit-tap-highlight-color:transparen
    </div>
    <p class="route-note" id="routeNote">날짜를 선택하면 그날의 이동만 표시됩니다.</p>
    <a class="external-route" id="externalRoute" href="https://www.google.com/maps/search/?api=1&amp;query=Van+Boetzelaerstraat+68+Amsterdam" target="_blank" rel="noopener noreferrer" hidden>Google Maps에서 동선 보기 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></a>
+  </section>
+
+  <section class="section places-section" id="places" aria-labelledby="placesTitle">
+   <div class="section-head"><div><p class="eyebrow">PLACES / 식당 & 가볼 곳</p><h2 id="placesTitle">A little off the dance floor.</h2></div><span class="places-total">4 places</span></div>
+   <p class="places-intro">공연 사이, 들르고 싶은 곳들. 숙소에서 어디쯤인지 먼저 살펴보세요.</p>
+   <div class="places-toolbar">
+    <div class="places-categories" role="group" aria-label="장소 분류"><button type="button" data-place-category="all" aria-pressed="true">전체 <span>4</span></button><button type="button" data-place-category="restaurant" aria-pressed="false">식당 <span>4</span></button><button type="button" data-place-category="sight" aria-pressed="false">가볼 곳 <span>0</span></button></div>
+    <label class="places-search"><span class="sr-only">Places 검색</span><input type="search" id="placesSearch" placeholder="이름, 지역으로 찾기" autocomplete="off"></label>
+   </div>
+   <div class="places-layout">
+    <div class="places-map-column">
+     <div class="places-map-heading"><span>FROM SOMIN’S HOME</span><button type="button" id="placesMapReset">전체 위치</button></div>
+     <div class="places-map-surface"><svg id="placesMap" viewBox="0 0 420 440" role="group" aria-label="숙소와 저장한 장소의 위치 개요도"></svg></div>
+     <div class="places-selection" id="placesSelection" aria-live="polite"></div>
+     <p class="places-map-note">북쪽이 위 · 점선은 숙소와의 연결선이며 실제 이동 경로가 아닙니다. 거리는 직선거리 기준입니다.</p>
+    </div>
+    <div><p class="places-result" id="placesResult" role="status"></p><div class="places-list" id="placesList"></div><div class="places-empty" id="placesEmpty" hidden><h3 id="placesEmptyTitle">일치하는 장소가 없어요.</h3><p id="placesEmptyText">다른 이름이나 지역으로 검색해 보세요.</p><button type="button" class="action-pill" id="placesReset">전체 장소 보기</button></div></div>
+   </div>
+   <p class="places-footnote">아직 방문일을 정하지 않은 장소 목록입니다. 주소는 각 식당 공식 사이트 기준 · 2026.09.13 확인.</p>
+   <noscript><p>장소 지도와 목록을 보려면 JavaScript를 활성화해 주세요.</p></noscript>
   </section>
 
   <section class="section flight-section" id="flights" aria-labelledby="flightTitle">

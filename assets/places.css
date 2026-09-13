@@ -1,0 +1,85 @@
+.mobile-section-nav{display:none}
+.places-section{scroll-margin-top:24px}
+.places-section .section-head{align-items:center;margin-bottom:18px}
+.places-section .section-head h2{font-size:clamp(32px,4vw,52px);max-width:760px}
+.places-total{border:1px solid #ddd;border-radius:30px;padding:9px 15px;white-space:nowrap;font-size:13px}
+.places-intro{color:var(--muted);font-size:15px;margin:0 0 28px}
+.places-toolbar{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:24px}
+.places-categories{display:flex;gap:7px}
+.places-categories button{padding:11px 15px;min-height:44px;border-radius:24px;background:var(--soft);white-space:nowrap;font-size:14px}
+.places-categories button[aria-pressed=true]{background:var(--yellow)}
+.places-categories span{font-size:11px;margin-left:5px;color:#555}
+.places-search input{width:230px;max-width:100%;border:0;border-bottom:1px solid #bbb;padding:12px 2px;background:transparent;border-radius:0;font-size:16px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.places-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:36px;align-items:start}
+.places-map-column{background:#f6f6f1;border-radius:6px;overflow:hidden}
+.places-map-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 20px 0;font-size:11px;letter-spacing:.06em}
+.places-map-heading button{min-height:44px;font-size:12px;letter-spacing:0;text-decoration:underline;text-underline-offset:4px}
+.places-map-surface{padding:0 10px}
+#placesMap{display:block;width:100%;max-height:490px;overflow:hidden}
+.places-ring{fill:none;stroke:#e1e1d6;stroke-width:1}
+.places-ring-label{font-size:10px;fill:#96968b}
+.places-connection{stroke:#b8b8aa;stroke-width:1.3;stroke-dasharray:4 5;fill:none}
+.places-connection.selected{stroke:#111;stroke-width:2}
+.places-pin{cursor:pointer;outline:none}
+.places-pin .places-marker{fill:#fff;stroke:#111;stroke-width:1.2;transition:fill .15s}
+.places-pin[aria-pressed=true] .places-marker,.places-pin:hover .places-marker,.places-pin:focus-visible .places-marker{fill:var(--yellow);stroke-width:2}
+.places-pin .places-hit{fill:transparent;stroke:none}
+.places-pin:hover .places-hit,.places-pin:focus-visible .places-hit,.places-pin[aria-pressed=true] .places-hit{fill:transparent;stroke:none}
+.places-pin:focus-visible .places-focus{stroke:#111;stroke-width:2;fill:none}
+.places-focus{stroke:none;fill:none}
+.places-number{font-size:13px;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.places-label{font-size:13px;font-weight:500;fill:#111;paint-order:stroke;stroke:#f6f6f1;stroke-width:5px;stroke-linejoin:round;pointer-events:none}
+.places-home-label{font-size:14px}
+.places-selection{background:var(--yellow);padding:19px 22px;min-height:130px}
+.places-selection small{display:block;font-size:11px;margin-bottom:7px}
+.places-selection strong{display:block;font-size:23px;font-weight:500;letter-spacing:-.03em;line-height:1.2}
+.places-selection p{font-size:12px;margin:7px 0 8px}
+.places-selection .places-links{margin-top:9px}
+.places-map-note{font-size:11px;color:#68685c;padding:14px 20px;margin:0;line-height:1.6}
+.places-result{font-size:12px;color:var(--muted);margin:0 0 12px}
+.places-card{padding:23px 0;border-top:1px solid #d2d2d2}
+.places-card:first-child{padding-top:18px}
+.places-card-heading{display:flex;gap:14px;align-items:flex-start;justify-content:space-between}
+.places-card small{font-size:11px;color:var(--muted);letter-spacing:.025em}
+.places-card h3{font-size:27px;line-height:1.2;letter-spacing:-.04em;font-weight:500;margin:7px 0 0}
+.places-card-heading button{background:var(--soft);border-radius:50%;width:44px;height:44px;flex-shrink:0;font-size:14px}
+.places-card-heading button[aria-pressed=true]{background:var(--yellow)}
+.places-card p{font-size:14px;margin:12px 0 0;color:#555;line-height:1.55}
+.places-card .places-distance{font-size:12px;color:#333;margin-top:7px}
+.places-card .places-arrival{font-size:12px;color:#666}
+.places-links{display:flex;flex-wrap:wrap;gap:5px 18px;margin-top:13px}
+.places-links a{display:inline-flex;align-items:center;min-height:36px;font-size:12px;text-decoration:underline;text-underline-offset:4px}
+.places-empty{padding:40px 20px;background:var(--soft);border-radius:4px;text-align:center}
+.places-empty h3{font-size:23px;font-weight:400;margin:0 0 10px}
+.places-empty p{font-size:14px;color:var(--muted);margin-bottom:22px}
+.places-footnote{font-size:11px;color:var(--muted);line-height:1.7;margin-top:23px}
+@media(max-width:1050px){
+ html:root{scroll-padding-top:154px}
+ .mobile-section-nav{display:flex;justify-content:center;gap:4px;border-top:1px solid #f1f1f1;border-bottom:1px solid #eee;background:#fff}
+ .mobile-section-nav a{display:flex;align-items:center;justify-content:center;min-height:44px;padding:0 22px;font-size:13px}
+ .mobile-section-nav a[aria-current=location]{box-shadow:inset 0 -3px var(--yellow)}
+ .places-layout{gap:24px}
+}
+@media(max-width:720px){
+ html:root{scroll-padding-top:144px}
+ .places-section .section-head{align-items:flex-start;gap:12px}
+ .places-section .section-head h2{font-size:35px;max-width:290px}
+ .places-total{font-size:11px;padding:7px 10px;margin-top:24px}
+ .places-intro{font-size:13px;max-width:290px;line-height:1.65;margin-bottom:20px}
+ .places-toolbar{display:block;margin-bottom:20px}
+ .places-categories{gap:6px}
+ .places-categories button{font-size:13px;padding:10px 14px}
+ .places-search{display:block;margin-top:12px}
+ .places-search input{width:100%}
+ .places-layout{grid-template-columns:minmax(0,1fr);gap:27px}
+ .places-map-heading{padding:8px 14px 0}
+ .places-map-surface{padding:0}
+ .places-selection{padding:17px 18px}
+ .places-selection strong{font-size:23px}
+ .places-card h3{font-size:27px}
+ .places-map-note{padding:12px 16px}
+ .mobile-section-nav a{flex:1;padding:0 8px}
+ body.places-in-view .floating-filter{visibility:hidden;pointer-events:none}
+}
+@media print{.mobile-section-nav,.places-toolbar,.places-card-heading button,.places-map-heading button{display:none}.places-layout{display:block}.places-map-column{max-width:460px}.places-card{break-inside:avoid}.places-selection{print-color-adjust:exact;-webkit-print-color-adjust:exact}}

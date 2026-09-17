@@ -28,7 +28,7 @@
  const searchURL = p => 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.name+' '+p.address);
  const routeURL = p => 'https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent(home.address)+'&destination='+encodeURIComponent(p.name+' '+p.address);
  const link = (url,label) => '<a href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">'+label+' ↗</a>';
- const reservation = p => p.reservationDetails ? '<p class="places-reservation">'+esc(p.reservationSummary)+'</p><details class="event-details"><summary>상세보기 <span aria-hidden="true">+</span></summary><div class="details-body">'+p.reservationDetails.map(row=>'<div class="detail-line"><span>'+esc(row.label)+'</span><p>'+esc(row.text)+'</p></div>').join('')+'</div></details>' : '';
+ const reservation = p => p.reservationDetails ? '<p class="places-reservation">'+esc(p.reservationSummary)+'</p><details class="event-details"><summary>상세정보 <span aria-hidden="true">+</span></summary><div class="details-body">'+p.reservationDetails.map(row=>'<div class="detail-line"><span>'+esc(row.label)+'</span><p>'+esc(row.text)+'</p></div>').join('')+'</div></details>' : '';
  const links = p => link(searchURL(p),'Google Maps')+link(routeURL(p),'숙소에서 길찾기')+link(p.website,'공식 사이트');
  // Local equirectangular projection: north up, 88 SVG units per kilometre.
  const project = p => ({x:66+(p.lon-home.lon)*111.32*Math.cos(home.lat*Math.PI/180)*88,y:70+(home.lat-p.lat)*111.32*88});

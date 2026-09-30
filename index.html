@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="ko">
 <head>
+<link rel="stylesheet" href="./assets/access.css">
+<script src="./assets/access.js"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
@@ -100,6 +102,24 @@ button,input,select{font:inherit}button,a{-webkit-tap-highlight-color:transparen
 </style>
 </head>
 <body id="top">
+<section id="accessGate" class="access-gate" aria-labelledby="accessTitle">
+ <div class="access-box">
+  <img class="access-brand" src="./assets/icon-192.png" alt="ADE">
+  <h1 id="accessTitle">ADE 2026 Plans</h1>
+  <p>우리 여행 계획을 보려면 비밀번호를 입력해 주세요.</p>
+  <form id="accessForm" novalidate>
+   <label for="accessCode">비밀번호 4자리</label>
+   <input id="accessCode" name="accessCode" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off" enterkeyhint="go" aria-describedby="accessError accessRemember" required>
+   <p id="accessError" class="access-error" role="alert"></p>
+   <button type="submit">입장하기</button>
+  </form>
+  <p id="accessRemember" class="access-note">한 번 입력하면 이 브라우저에서 기억합니다. 브라우저 데이터를 지우거나 시크릿 모드를 사용하면 다시 입력해야 합니다.</p>
+  <noscript><p>비밀번호를 입력하려면 JavaScript를 활성화해 주세요.</p></noscript>
+ </div>
+</section>
+<div id="planContent" inert>
+<span id="accessWelcome" tabindex="-1" class="sr-only">ADE 2026 여행 계획</span>
+
 
 
 <header class="site-header">
@@ -823,4 +843,5 @@ button,input,select{font:inherit}button,a{-webkit-tap-highlight-color:transparen
  tick();setInterval(tick,1000);
 })();
 </script>
+<div class="access-device"><p id="accessNotice" role="status"></p><button id="lockDevice" type="button">이 기기 잠그기</button></div></div>
 </body></html>

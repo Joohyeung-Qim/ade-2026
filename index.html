@@ -99,6 +99,45 @@ button,input,select{font:inherit}button,a{-webkit-tap-highlight-color:transparen
 }
 .spielraum-timetable{width:100%;border-collapse:collapse;table-layout:fixed;font-size:12px;margin:20px 0}.spielraum-timetable caption{text-align:left;font-weight:600;margin-bottom:8px}.spielraum-timetable th,.spielraum-timetable td{text-align:left;padding:9px 5px;border-bottom:1px solid #ddd;vertical-align:top;overflow-wrap:anywhere}.spielraum-timetable th:nth-child(1){width:54px}.spielraum-timetable th:nth-child(2){width:62px}
 .open-ended-time{white-space:nowrap}.wishlist-search{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:22px 0 30px;font-size:14px}.wishlist-search input{max-width:100%;padding:12px;border:1px solid #ccc;border-radius:4px;font:inherit} @media(max-width:720px){.event-time .open-ended-time{font-size:17px;letter-spacing:-.04em}}
+/* Keep the same live map and controls when opening a full-screen view. */
+.map-fullscreen-button{display:inline-flex;align-items:center;gap:7px;min-height:44px;padding:10px 14px;background:var(--yellow);border-radius:24px;font-size:13px;white-space:nowrap}
+.map-fullscreen-button .icon{width:17px;height:17px}
+.map-fullscreen{position:fixed;inset:0;width:100%;max-width:none;height:100vh;height:100dvh;max-height:none;margin:0;padding:0;border:0;border-radius:0;background:#fff;color:var(--ink);overflow:hidden}
+.map-fullscreen[open]{display:flex;flex-direction:column}
+.map-fullscreen::backdrop{background:#fff}
+.map-fullscreen-head{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-shrink:0;padding:calc(8px + env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) 8px max(16px,env(safe-area-inset-left));border-bottom:1px solid var(--line)}
+.map-fullscreen-head h2{margin:0;font-size:20px;font-weight:500;letter-spacing:-.03em}
+.map-fullscreen-close{display:flex;align-items:center;gap:5px;min-height:44px;padding:8px 12px;background:var(--soft);border-radius:24px;font-size:14px}
+.map-fullscreen-close .icon{width:20px;height:20px}
+.map-fullscreen-content{display:flex;flex:1;min-height:0;padding-bottom:env(safe-area-inset-bottom)}
+.map-fullscreen .map-workspace{display:flex;flex-direction:column;flex:1;min-height:0;min-width:0}
+.map-fullscreen .map-bar{flex-shrink:0;margin:0;padding:8px 16px 12px}
+.map-fullscreen .map-layout{flex:1;min-height:0;grid-template-rows:minmax(0,1fr);margin:0 12px;--map-caption-height:42px}
+.map-fullscreen .map-side{min-height:0;max-height:100%;overflow-y:auto}
+.map-fullscreen .map-canvas{display:flex;flex-direction:column;height:100%;min-height:0}
+.map-fullscreen #overviewPane,.map-fullscreen #realPane{display:flex;flex-direction:column;flex:1;min-height:0}
+.map-fullscreen .map-scroll,.map-fullscreen .real-map iframe{flex:1;height:0;min-height:0}
+.map-fullscreen .map-caption,.map-fullscreen .real-note{flex-shrink:0}
+.map-fullscreen .route-note{flex-shrink:0;max-height:70px;overflow:auto;margin:0;padding:10px 16px;font-size:12px}
+.map-fullscreen .external-route{flex-shrink:0;align-self:flex-start;margin:0 16px 8px;font-size:12px}
+html.map-fullscreen-open{overflow:hidden}
+html.map-fullscreen-open body{position:fixed;top:var(--map-page-top);left:0;width:100%;overflow:hidden}
+@media(min-width:721px){
+ .map-fullscreen .map-bar{display:flex;gap:16px}
+ .map-fullscreen .map-modes{margin:0;flex-shrink:0}
+ .map-fullscreen .map-day-tabs{min-width:0}
+ .map-fullscreen .map-side .spot-list{max-height:none}
+}
+@media(max-width:720px){
+ #map>.section-head{align-items:center;gap:12px}
+ #map>.section-head h2{font-size:35px}
+ .map-fullscreen .map-modes{margin-bottom:8px}
+ .map-fullscreen .map-mode{min-height:40px;font-size:14px}
+ .map-fullscreen .map-layout{margin:0 8px}
+ .map-fullscreen .map-caption{font-size:10px;gap:8px}
+ .map-fullscreen .map-side{max-height:calc(100% - 85px)}
+}
+@media print{.map-fullscreen-button,.map-fullscreen{display:none!important}}
 </style>
 </head>
 <body id="top">
@@ -401,11 +440,12 @@ button,input,select{font:inherit}button,a{-webkit-tap-highlight-color:transparen
           <button type="button" class="favorite icon-button" data-favorite="lane8" aria-pressed="false" aria-label="DGTL · Lane 8 / This Never Happened 찜하기"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
         </article></div></section><p id="wishlistEmpty" hidden>일치하는 Wishlist 행사가 없어요.</p></section>
   <section class="section" id="map" aria-labelledby="mapTitle">
-   <div class="section-head"><div><p class="eyebrow">MAP / 숙소부터 공연장까지</p><h2 id="mapTitle">Around Amsterdam</h2></div></div>
+   <div class="section-head"><div><p class="eyebrow">MAP / 숙소부터 공연장까지</p><h2 id="mapTitle">Around Amsterdam</h2></div><button type="button" class="map-fullscreen-button" id="mapFullscreenOpen" aria-haspopup="dialog" aria-controls="mapFullscreen"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></svg>전체화면</button></div>
    <div class="stay-strip" id="stay">
     <div><small>HOME BASE</small><h3>Somin’s home</h3><p id="homeAddress">Van Boetzelaerstraat 68-2</p></div>
     <div class="stay-actions"><button class="text-link" type="button" id="copyAddress">주소 복사 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="13" rx="1"/><path d="M15 8V3H3v13h5"/></svg></button><a class="action-pill white" href="https://www.google.com/maps/search/?api=1&amp;query=Van+Boetzelaerstraat+68-2+Amsterdam" target="_blank" rel="noopener noreferrer">숙소 길찾기 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></a></div>
    </div>
+   <div id="mapWorkspaceSlot"><div class="map-workspace" id="mapWorkspace">
    <div class="map-bar">
     <div class="map-modes" aria-label="지도 보기 방식"><button type="button" class="map-mode selected" data-map-mode="overview" aria-pressed="true">동선 개요</button><button type="button" class="map-mode" data-map-mode="real" aria-pressed="false">실제 지도 ↗</button></div>
     <div class="day-tabs map-day-tabs" aria-label="동선 날짜 선택"><button type="button" class="day-button selected" data-mapday="all" aria-pressed="true">전체</button><button type="button" class="day-button" data-mapday="20" aria-pressed="false">20 <small>화</small></button><button type="button" class="day-button" data-mapday="21" aria-pressed="false">21 <small>수</small></button><button type="button" class="day-button" data-mapday="22" aria-pressed="false">22 <small>목</small></button><button type="button" class="day-button" data-mapday="23" aria-pressed="false">23 <small>금</small></button><button type="button" class="day-button" data-mapday="24" aria-pressed="false">24 <small>토</small></button><button type="button" class="day-button" data-mapday="25" aria-pressed="false">25 <small>일</small></button></div>
@@ -492,6 +532,11 @@ button,input,select{font:inherit}button,a{-webkit-tap-highlight-color:transparen
    </div>
    <p class="route-note" id="routeNote">날짜를 선택하면 그날의 이동만 표시됩니다.</p>
    <a class="external-route" id="externalRoute" href="https://www.google.com/maps/search/?api=1&amp;query=Van+Boetzelaerstraat+68+Amsterdam" target="_blank" rel="noopener noreferrer" hidden>Google Maps에서 동선 보기 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></a>
+   </div></div>
+   <dialog class="map-fullscreen" id="mapFullscreen" aria-labelledby="mapFullscreenTitle">
+    <div class="map-fullscreen-head"><h2 id="mapFullscreenTitle">Map / 동선</h2><button type="button" class="map-fullscreen-close" id="mapFullscreenClose" autofocus><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6"/></svg>닫기</button></div>
+    <div class="map-fullscreen-content" id="mapFullscreenContent"></div>
+   </dialog>
   </section>
 
   <section class="section places-section" id="places" aria-labelledby="placesTitle">
@@ -710,12 +755,40 @@ button,input,select{font:inherit}button,a{-webkit-tap-highlight-color:transparen
  const scroll=$('#mapScroll'), inner=$('#mapInner');
  const mobileMap=window.matchMedia('(max-width:720px)');
  const mapSide=$('.map-side'), mapToggle=$('#mapPanelToggle');
+ const mapFullscreen=$('#mapFullscreen'), mapWorkspace=$('#mapWorkspace');
+ const mapFullscreenOpen=$('#mapFullscreenOpen');
+ let mapPagePosition={x:0,y:0};
+ mapFullscreenOpen.addEventListener('click',()=>{
+  if(mapFullscreen.open)return;
+  mapPagePosition={x:window.scrollX,y:window.scrollY};
+  document.body.style.setProperty('--map-page-top',-mapPagePosition.y+'px');
+  document.documentElement.classList.add('map-fullscreen-open');
+  $('#mapFullscreenContent').append(mapWorkspace);
+  mapFullscreen.showModal();
+  setMapPanel(false);
+  requestAnimationFrame(()=>{syncMapPanelSpace();sizeMap();});
+ });
+ function restoreMapWorkspace(){
+  if(mapFullscreen.open||mapWorkspace.parentElement===$('#mapWorkspaceSlot'))return;
+  $('#mapWorkspaceSlot').append(mapWorkspace);
+  document.documentElement.classList.remove('map-fullscreen-open');
+  document.body.style.removeProperty('--map-page-top');
+  setMapPanel(false);
+  syncMapPanelSpace();sizeMap();
+  mapFullscreenOpen.focus({preventScroll:true});
+  window.scrollTo({left:mapPagePosition.x,top:mapPagePosition.y,behavior:'instant'});
+ }
+ function closeFullscreenMap(){mapFullscreen.close();restoreMapWorkspace();}
+ $('#mapFullscreenClose').addEventListener('click',closeFullscreenMap);
+ mapFullscreen.addEventListener('cancel',e=>{e.preventDefault();closeFullscreenMap();});
+ mapFullscreen.addEventListener('close',restoreMapWorkspace);
  function syncMapPanelSpace(){
   const caption=mapMode==='overview'?$('.map-caption'):$('.real-note');
   $('.map-layout').style.setProperty('--map-caption-height',((caption?caption.offsetHeight:42)+8)+'px');
   scroll.style.setProperty('--map-panel-inset',mobileMap.matches?(mapSide.offsetHeight+18)+'px':'0px');
  }
  function setMapPanel(open, recenter=false){
+  if(!open&&$('#spotList').contains(document.activeElement))mapToggle.focus({preventScroll:true});
   mapSide.classList.toggle('expanded',Boolean(open)&&mobileMap.matches);
   mapToggle.setAttribute('aria-expanded',String(Boolean(open)&&mobileMap.matches));
   $('#mapPanelLabel').textContent=open&&mobileMap.matches?'\uB2EB\uAE30':'\uC7A5\uC18C \uBAA9\uB85D';
